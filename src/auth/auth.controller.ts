@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
-import { User } from "../entities/User";
+import { User } from "../user/entities/user.entity"
 import jwt from "jsonwebtoken"
 
 export const signUp = async (req: Request, res: Response) => {
