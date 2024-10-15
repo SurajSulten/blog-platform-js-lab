@@ -14,7 +14,7 @@ export class Comment {
     blog!: Blog;
 
     @Column('text')
-    context!: string;
+    content!: string;
 
     @CreateDateColumn()
     created_at!: Date;
