@@ -20,7 +20,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
       return res.status(401).json({ message: 'Invalid token' });
     }
 
-    req.user = user; // Assign the authenticated user to req.user
+    req.user = user; 
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Invalid or expired token' });

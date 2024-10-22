@@ -54,7 +54,6 @@ export class CommentController {
 
   static async editComment(req: Request, res: Response): Promise<Response> {
     try {
-      const { content } = req.body;
       const commentRepository = getRepository(Comment);
       const comment = await commentRepository.findOne({
         where: { id: req.params.commentId },
@@ -62,11 +61,6 @@ export class CommentController {
       });
       if (!comment) {
         return res.status(404).json({ message: "Comment not found" });
-      }
-      if (comment.user.id !== req.user.id) {
-        return res
-          .status(403)
-          .json({ message: "You are not authorized to edit this comment" });
       }
 
       comment.content = req.body.content;
