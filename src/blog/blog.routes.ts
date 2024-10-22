@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { BlogController } from './blog.controller'; // Assuming you have a BlogController
-import { isAuthenticated } from '../middleware/authMiddleware'; // Auth middleware
-import { isAuthorOrAdmin } from '../middleware/isAuthorOrAdmin'; // Custom role-based middleware
+import { BlogController } from './blog.controller'; 
+import { isAuthenticated } from '../middleware/authMiddleware'; 
+import { isAuthorOrAdmin } from '../middleware/isAuthorOrAdmin'; 
 
 const router = Router();
 
