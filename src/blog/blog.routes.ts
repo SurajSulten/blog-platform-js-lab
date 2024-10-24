@@ -1,20 +1,21 @@
 import { Router } from 'express';
 import { BlogController } from './blog.controller'; 
 import { isAuthenticated } from '../middleware/authMiddleware'; 
-import { isAuthorOrAdmin } from '../middleware/isAuthorOrAdmin'; 
+import { isBlogAuthOrAdmin } from '../middleware/isBlogAuthOrAdmin'; 
+import { isBlogAuthor } from '../middleware/isBlogAuthor';
 
-const router = Router();
+const blogRouter = Router();
 
 // POST: Create a blog post (author must be authenticated)
-router.post('/', isAuthenticated, BlogController.createBlog);
+blogRouter.post('/', isAuthenticated, BlogController.createBlog);
 
 // GET: Fetch blog posts with pagination
-router.get('/', BlogController.getBlogs);
+blogRouter.get('/', BlogController.getBlogs);
 
-// PUT: Update a blog post (only author or admin can update)
-router.put('/:id', isAuthenticated, isAuthorOrAdmin, BlogController.updateBlog);
+// PUT: Update a blog post (only author update)
+blogRouter.put('/:id', isAuthenticated, isBlogAuthor, BlogController.updateBlog);
 
 // DELETE: Delete a blog post (only author or admin can delete)
-router.delete('/:id', isAuthenticated, isAuthorOrAdmin, BlogController.deleteBlog);
+blogRouter.delete('/:id', isAuthenticated, isBlogAuthOrAdmin, BlogController.deleteBlog);
 
-export default router;
+export default blogRouter;

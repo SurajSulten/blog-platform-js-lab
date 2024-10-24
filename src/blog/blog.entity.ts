@@ -4,24 +4,24 @@ import { User } from "../user/entities/user.entity";
 @Entity()
 export class Blog {
     @PrimaryGeneratedColumn('uuid')
-    id!: string;
+    id: string;
 
     @ManyToOne(() => User, (user) => user.id)
-    author!: User;
+    author: User;
 
     @Column()
-    title!: string;
+    title: string;
     
     @Column('text')
-    content!: string;
+    content: string;
     
-    @Column()
-    tags!: string[];
+    @Column("text", { array: true})
+    tags: string[];
 
     @CreateDateColumn()
-    created_at!: Date;
+    created_at: Date;
 
     @UpdateDateColumn()
-    updated_at!: Date;
+    updated_at: Date;
     
 }

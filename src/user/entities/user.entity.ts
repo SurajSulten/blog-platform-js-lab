@@ -4,19 +4,19 @@ import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class User {
     @PrimaryGeneratedColumn('uuid')
-    id!: string;
+    id: string;
 
     @Column({unique: true})
-    email!: string;
+    email: string;
     
     @Column()
-    username!: string;
+    username: string;
 
     @Column()
-    password!: string;
+    password: string;
     
     @Column()
-    role!: string; 
+    role: string; 
 
     @BeforeInsert()
     async hasPassword() {
