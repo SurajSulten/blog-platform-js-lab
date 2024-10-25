@@ -4,9 +4,9 @@ import { CommentController } from "./comment.controller";
 import { isCommentAuthOrAdmin } from "../middleware/isCommentAuthOrAdmin";
 import { isCommentAuth } from "../middleware/isCommentAuth";
 
-const router = Router();
+export const commentRouter = Router();
 
-router.post('/blogs/:id/comments', isAuthenticated, CommentController.addComment)
-router.get('/blogs/:id/comments', CommentController.getComments)
-router.put('/blogs/:id/comments/:commentId', isAuthenticated, isCommentAuth, CommentController.editComment)
-router.delete('/blogs/:id/comments/:commentId', isAuthenticated, isCommentAuthOrAdmin, CommentController.deleteComment)
+commentRouter.post('/blogs/:id/comments', isAuthenticated, CommentController.addComment)
+commentRouter.get('/blogs/:id/comments', CommentController.getComments)
+commentRouter.put('/blogs/:id/comments/:commentId', isAuthenticated, isCommentAuth, CommentController.editComment)
+commentRouter.delete('/blogs/:id/comments/:commentId', isAuthenticated, isCommentAuthOrAdmin, CommentController.deleteComment)

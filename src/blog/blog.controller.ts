@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
 import { Blog } from './blog.entity';
-import { User } from '../user/entities/user.entity';
+import AppDataSource from '../database';
+import { PrivateRequest } from '../shared/types/private-request.type';
 
 export class BlogController {
     static async getBlogs(req: Request, res: Response): Promise<Response> {
         const page = Number(req.query.page) || 1;
         const pageSize = Number(req.query.pageSize) || 10;
 
-        const blogRepository = getRepository(Blog);
+        const blogRepository = AppDataSource.getRepository(Blog);
         const [blogs, total] = await blogRepository.findAndCount({
             take: pageSize,
             skip: (page - 1) * pageSize,
@@ -23,14 +23,17 @@ export class BlogController {
         });
     }
 
-    static async createBlog(req: Request, res: Response): Promise<Response> {
+    static async createBlog(req: PrivateRequest, res: Response): Promise<Response> {
         try {
             const { title, content, tags } = req.body;
 
-            const blogRepository = getRepository(Blog);
-            const userRepository = getRepository(User);
-            const user = await userRepository.findOne(req.user.id);
+            const blogRepository = AppDataSource.getRepository(Blog);
+            if(!req.user) {
+                return res.status(401).json({message: "Unauthorized"})
+            }
 
+            const user = req.user;
+            
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
@@ -50,11 +53,11 @@ export class BlogController {
         }
     }
 
-    static async updateBlog(req: Request, res: Response): Promise<Response> {
+    static async updateBlog(req: PrivateRequest, res: Response): Promise<Response> {
         const { id } = req.params;
         const { title, content, tags } = req.body;
 
-        const blogRepository = getRepository(Blog);
+        const blogRepository = AppDataSource.getRepository(Blog);
 
         const blog = await blogRepository.findOne({ where: { id }, relations: ['author'] });
         if (!blog) return res.status(404).json({ message: 'Blog not found' });
@@ -67,10 +70,10 @@ export class BlogController {
         return res.status(200).json(blog);
     }
 
-    static async deleteBlog(req: Request, res: Response): Promise<Response> {
+    static async deleteBlog(req: PrivateRequest, res: Response): Promise<Response> {
         const { id } = req.params;
 
-        const blogRepository = getRepository(Blog);
+        const blogRepository = AppDataSource.getRepository(Blog);
 
         const blog = await blogRepository.findOne({ where: { id }, relations: ['author'] });
         if (!blog) return res.status(404).json({ message: 'Blog not found' });

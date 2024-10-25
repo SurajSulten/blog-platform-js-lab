@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
-import { getRepository, getTreeRepository } from "typeorm";
 import { Blog } from "../blog/blog.entity";
 import { Comment } from "./comment.entity";
 import { User } from "../user/entities/user.entity";
+import AppDataSource from "../database";
+import { PrivateRequest } from "../shared/types/private-request.type";
 
 export class CommentController {
-  static async addComment(req: Request, res: Response): Promise<Response> {
+  static async addComment(req: PrivateRequest, res: Response): Promise<Response> {
     try {
       const { content } = req.body;
-      const blogRepository = getRepository(Blog);
-      const commentRepository = getRepository(Comment);
+      const blogRepository = AppDataSource.getRepository(Blog);
+      const commentRepository = AppDataSource.getRepository(Comment);
 
       const blog = await blogRepository.findOne({
         where: { id: req.params.id },
@@ -29,8 +30,8 @@ export class CommentController {
 
   static async getComments(req: Request, res: Response): Promise<Response> {
     try {
-      const commentRepository = getTreeRepository(Comment);
-      const blogRepository = getRepository(Blog);
+      const commentRepository = AppDataSource.getTreeRepository(Comment);
+      const blogRepository = AppDataSource.getRepository(Blog);
 
       const blog = await blogRepository.findOne({
         where: { id: req.params.id },
@@ -52,9 +53,9 @@ export class CommentController {
     }
   }
 
-  static async editComment(req: Request, res: Response): Promise<Response> {
+  static async editComment(req: PrivateRequest, res: Response): Promise<Response> {
     try {
-      const commentRepository = getRepository(Comment);
+      const commentRepository = AppDataSource.getRepository(Comment);
       const comment = await commentRepository.findOne({
         where: { id: req.params.commentId },
         relations: ["user"],
@@ -71,8 +72,8 @@ export class CommentController {
       return res.status(500).json({ message: "Error editing comment", error });
     }
   }
-  static async deleteComment(req: Request, res: Response): Promise<Response> {
-    const commentRepository = getRepository(Comment);
+  static async deleteComment(req: PrivateRequest, res: Response): Promise<Response> {
+    const commentRepository = AppDataSource.getRepository(Comment);
     const comment = await commentRepository.findOne({
         where: {id: req.params.commentId},
         relations: ['user'] 

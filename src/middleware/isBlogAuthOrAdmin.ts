@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { getRepository } from 'typeorm';
 import { Blog } from '../blog/blog.entity';
 import { User } from '../user/entities/user.entity';
+import AppDataSource from '../database';
+import { PrivateRequest } from '../shared/types/private-request.type';
 
-export const isAuthorOrAdmin = async (req: Request, res: Response, next: NextFunction) => {
-    const blogRepository = getRepository(Blog);
+export const isBlogAuthOrAdmin = async (req: PrivateRequest, res: Response, next: NextFunction) => {
+    const blogRepository = AppDataSource.getRepository(Blog);
     const blog = await blogRepository.findOne({ where: { id: req.params.id }, relations: ['author'] });
     
     if (!blog) {

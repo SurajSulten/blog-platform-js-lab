@@ -1,11 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
-import { getRepository } from 'typeorm';
+import { Response, NextFunction } from 'express';
 import { User } from '../user/entities/user.entity';
 import { Comment } from '../comment/comment.entity';
+import AppDataSource from '../database';
+import { PrivateRequest } from '../shared/types/private-request.type';
 
-export const isCommentAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const isCommentAuth = async (req: PrivateRequest, res: Response, next: NextFunction) => {
     try {
-        const commentRepository = getRepository(Comment); 
+        const commentRepository = AppDataSource.getRepository(Comment); 
         const user = req.user as User;
         const { commentId } = req.params;
 
