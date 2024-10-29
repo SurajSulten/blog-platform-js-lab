@@ -18,10 +18,12 @@ export class Blog {
     @Column("text", { array: true})
     tags: string[];
 
+    @Column({default: 0})
+    likes: number;
+
     @CreateDateColumn()
     created_at: Date;
 
     @UpdateDateColumn()
     updated_at: Date;
-    
 }
