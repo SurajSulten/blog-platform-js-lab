@@ -12,6 +12,15 @@ blogRouter.post('/', isAuthenticated, BlogController.createBlog);
 // GET: Fetch blog posts with pagination
 blogRouter.get('/', BlogController.getBlogs);
 
+// GET: Fetch a blog by id
+blogRouter.get('/:id', BlogController.getBlogById);
+
+//POST: add like to a blog 
+blogRouter.post('/:id/like', isAuthenticated, BlogController.likeBlog);
+
+//POST: add dislike to a blog
+blogRouter.post('/:id/dislike', isAuthenticated, BlogController.dislikeBlog);
+
 // PUT: Update a blog post (only author update)
 blogRouter.put('/:id', isAuthenticated, isBlogAuthor, BlogController.updateBlog);
 

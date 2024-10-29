@@ -3,6 +3,8 @@ import { Blog } from './blog.entity';
 import AppDataSource from '../database';
 import { PrivateRequest } from '../shared/types/private-request.type';
 import { In, Like } from 'typeorm';
+import { BlogLikes } from './blogLikes.entity';
+import { BlogDislikes } from './blogDislikes.entity';
 
 export class BlogController {
     static async getBlogs(req: Request, res: Response): Promise<Response> {
@@ -24,7 +26,7 @@ export class BlogController {
                 whereConditions.tags = In(tagArray);
             }
         }
-        
+
         const [blogs, total] = await blogRepository.findAndCount({
             where: whereConditions,
             take: pageSize,
@@ -37,6 +39,21 @@ export class BlogController {
             page,
             pageSize,
             totalPages: Math.ceil(total / pageSize),
+        });
+    }
+
+    static async getBlogById(req: Request, res: Response) {
+        const {id} = req.params
+
+        const blogRepository = AppDataSource.getRepository(Blog);
+        const blog = await blogRepository.findOne({where: {id}})
+
+        if(!blog) {
+            return res.status(404).json({message: "Blog not found"})
+        }
+        console.log(blog);
+        return res.json({
+            data: blog
         });
     }
 
@@ -77,12 +94,12 @@ export class BlogController {
         const blogRepository = AppDataSource.getRepository(Blog);
 
         const blog = await blogRepository.findOne({ where: { id }, relations: ['author'] });
-        if (!blog) return res.status(404).json({ message: 'Blog not found' });
+        if (!blog) return res.status(404).json({ message: 'Blog does not exist' });
 
         blog.title = title;
         blog.content = content;
         blog.tags = tags;
-        await blogRepository.save(blog); // Save the updated blog
+        await blogRepository.save(blog); 
 
         return res.status(200).json(blog);
     }
@@ -95,8 +112,78 @@ export class BlogController {
         const blog = await blogRepository.findOne({ where: { id }, relations: ['author'] });
         if (!blog) return res.status(404).json({ message: 'Blog not found' });
 
-        await blogRepository.remove(blog); // Remove the blog
+        await blogRepository.remove(blog); 
 
         return res.status(200).json({ message: 'Blog deleted successfully' });
+    }
+
+    static async likeBlog(req: PrivateRequest, res: Response) {
+        const blogId = req.params.id;
+        const userId = req.user?.id;
+
+        const blogRepository = AppDataSource.getRepository(Blog);
+        const blog = await blogRepository.findOneBy({id: blogId})
+        if (!blog) return res.status(400).json({ message: 'Blog does not exist'});
+
+        const blogLikesRepository = AppDataSource.getRepository(BlogLikes)
+        const blogDislikesRepository = AppDataSource.getRepository(BlogDislikes)
+
+        if(await blogLikesRepository.exists({where: {userId, blogId}}) ) {
+            blog.likes -= 1
+            blogLikesRepository.delete({userId, blogId})
+        } else if (await blogDislikesRepository.exists({where: {userId, blogId}})){
+            await blogLikesRepository.insert({
+                userId,
+                blogId
+            })
+            blogDislikesRepository.delete({userId, blogId})
+            blog.likes += 1 
+            blog.dislikes -= 1
+        } else {
+            await blogLikesRepository.insert({
+                userId,
+                blogId
+            })
+            blog.likes += 1
+             
+        }
+        await blogRepository.save(blog);
+
+        return res.status(200).json(blog);
+    }
+
+    static async dislikeBlog(req: PrivateRequest, res: Response) {
+        const blogId = req.params.id
+        const userId = req.user?.id
+
+        const blogRepository = AppDataSource.getRepository(Blog);
+        const blog = await blogRepository.findOneBy({id: blogId})
+        if (!blog) return res.status(400).json({ message: 'Blog does not exist'});
+
+        const blogLikesRepository = AppDataSource.getRepository(BlogLikes)
+        const blogDislikesRepository = AppDataSource.getRepository(BlogDislikes)
+
+        if(await blogDislikesRepository.exists({where: {userId, blogId}})) {
+            blog.dislikes -= 1
+            blogDislikesRepository.delete({userId, blogId})
+        } else if (await blogLikesRepository.exists({where: {userId, blogId}})){
+            await blogDislikesRepository.insert({
+                userId,
+                blogId
+            })
+            blogLikesRepository.delete({userId, blogId})
+            blog.dislikes += 1 
+            blog.likes -= 1
+        } else {
+            await blogDislikesRepository.insert({
+                userId,
+                blogId
+            })
+            blog.dislikes += 1 
+        }     
+
+        await blogRepository.save(blog); 
+
+        return res.status(200).json(blog);
     }
 }
