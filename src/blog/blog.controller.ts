@@ -2,17 +2,34 @@ import { Request, Response } from 'express';
 import { Blog } from './blog.entity';
 import AppDataSource from '../database';
 import { PrivateRequest } from '../shared/types/private-request.type';
+import { In, Like } from 'typeorm';
 
 export class BlogController {
     static async getBlogs(req: Request, res: Response): Promise<Response> {
         const page = Number(req.query.page) || 1;
         const pageSize = Number(req.query.pageSize) || 10;
+        const title = req.query.title as String | undefined;
+        const content = req.query.content as String | undefined;
+        const tags = req.query.tag as String | undefined;
 
         const blogRepository = AppDataSource.getRepository(Blog);
+
+        const whereConditions: any = {};
+        if (title) whereConditions.title = Like(`%${title}%`);
+        if (content) whereConditions.content = Like(`%${content}%`);
+
+        if (tags) {
+            const tagArray = tags.split(',').map(tag => tag.trim()).filter(Boolean);
+            if (tagArray.length > 0) {
+                whereConditions.tags = In(tagArray);
+            }
+        }
+        
         const [blogs, total] = await blogRepository.findAndCount({
+            where: whereConditions,
             take: pageSize,
-            skip: (page - 1) * pageSize,
-        });
+            skip: (page - 1) * pageSize,            
+        }); 
 
         return res.json({
             data: blogs,
