@@ -18,9 +18,6 @@ blogRouter.get('/:id', BlogController.getBlogById);
 //POST: add like to a blog 
 blogRouter.post('/:id/like', isAuthenticated, BlogController.likeBlog);
 
-//POST: add dislike to a blog
-blogRouter.post('/:id/dislike', isAuthenticated, BlogController.dislikeBlog);
-
 // PUT: Update a blog post (only author update)
 blogRouter.put('/:id', isAuthenticated, isBlogAuthor, BlogController.updateBlog);
 

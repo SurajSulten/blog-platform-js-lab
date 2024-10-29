@@ -21,9 +21,6 @@ export class Blog {
     @Column({default: 0})
     likes: number;
 
-    @Column({default: 0})
-    dislikes: number;
-
     @CreateDateColumn()
     created_at: Date;
 

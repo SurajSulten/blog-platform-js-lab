@@ -4,7 +4,6 @@ import { User } from './user/entities/user.entity';
 import { Blog } from './blog/blog.entity';
 import { Comment } from './comment/comment.entity';
 import { BlogLikes } from './blog/blogLikes.entity';
-import { BlogDislikes } from './blog/blogDislikes.entity';
 
 const AppDataSource = new DataSource({
   type: 'postgres',
@@ -13,7 +12,7 @@ const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
   database: process.env.DB_NAME || 'postgres',
-  entities: [User, Blog, Comment, BlogLikes, BlogDislikes],
+  entities: [User, Blog, Comment, BlogLikes],
   synchronize: true,
 });
 
