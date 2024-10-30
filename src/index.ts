@@ -4,6 +4,7 @@ import AppDataSource from './database';
 import authRoutes from './routes/authRoutes';
 import blogRouter from './blog/blog.routes';
 import { commentRouter } from './comment/comment.routes';
+import userRouter from './user/user.routes';
 
 dotenv.config();
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/blogs', blogRouter);
 app.use('/', commentRouter);
+app.use('/users', userRouter);
 
 app.get('/', (req, res) => {
   res.send('Hello, Express!');

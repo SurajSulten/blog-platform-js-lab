@@ -3,9 +3,13 @@ import { isAuthenticated } from '../middleware/authMiddleware';
 import { UserController } from './user.controller';
 import { isAdmin } from '../middleware/isAdmin';
 
-const router = Router();
+const userRouter = Router();
+
+userRouter.get('/profile', isAuthenticated, UserController.getUser)
+
+userRouter.put('/profile', isAuthenticated, UserController.updateUser)
 
 // PUT: Update a user role (only admin can update)
-router.put('users/:userId/role', isAuthenticated, isAdmin, UserController.updateUserRole);
+userRouter.put('/:userId/role', isAuthenticated, isAdmin, UserController.updateUserRole);
 
-export default router;
+export default userRouter;
